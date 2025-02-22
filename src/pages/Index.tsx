@@ -43,7 +43,6 @@ const Index = () => {
       });
     },
     onMessage: (message) => {
-      console.error(message)
       const messageContent = typeof message === 'object' 
         ? message.message || JSON.stringify(message)
         : String(message);
@@ -51,27 +50,13 @@ const Index = () => {
       console.log(`${message.role} message:`, messageContent);
       
       setMessages(prev => [...prev, { 
-        role: message.source === "user" ? "user" : "ai", 
+        role: message.source === "user" ? "user" : "assistant", 
         content: messageContent
       }]);
     },
     onSpeechStart: () => {
       console.log("Speech started");
     },
-    // onSpeechEnd: (transcript) => {
-    //   if (transcript) {
-    //     const messageContent = typeof transcript === 'object' 
-    //       ? JSON.stringify(transcript) 
-    //       : transcript;
-        
-    //     console.log("User message:", messageContent);
-        
-    //     setMessages(prev => [...prev, { 
-    //       role: "user", 
-    //       content: messageContent
-    //     }]);
-    //   }
-    // },
   });
 
   const handleStartConversation = async () => {
@@ -109,17 +94,11 @@ const Index = () => {
     <div className="flex min-h-screen">
       {/* Left Side - Control Panel */}
       <div className="w-1/4 bg-voyagr p-6 flex flex-col relative">
-        <div className="flex justify-between items-start">
-          <h1 className="font-pixelify text-4xl text-white mb-8">Voyagr</h1>
-          <div className="flex items-end">
-            <ConversationStatus 
-              status={conversation.status === "disconnecting" ? "disconnected" : conversation.status} 
-              isSpeaking={conversation.isSpeaking} 
-            />
-          </div>
+        <div className="mb-8">
+          <h1 className="font-pixelify text-4xl text-white">Voyagr</h1>
         </div>
         
-        <div className="flex-1 flex flex-col justify-center items-center">
+        <div className="flex-1 flex flex-col justify-center items-center gap-4">
           <Button
             variant="outline"
             size="lg"
@@ -150,6 +129,11 @@ const Index = () => {
               )}
             </div>
           </Button>
+
+          <ConversationStatus 
+            status={conversation.status === "disconnecting" ? "disconnected" : conversation.status} 
+            isSpeaking={conversation.isSpeaking} 
+          />
         </div>
 
         <div className="mt-auto">
