@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
 interface Message {
-  role: "user" | "assistant";
+  role: "user" | "assistant" | "api";
   content: string;
 }
 
@@ -24,7 +24,11 @@ const ConversationHistory = ({ messages }: ConversationHistoryProps) => {
             <div className="flex items-center gap-3">
               <div className={cn(
                 "w-1.5 h-1.5 rounded-full",
-                message.role === "user" ? "bg-white" : "bg-voyagr"
+                message.role === "user" 
+                  ? "bg-white" 
+                  : message.role === "api" 
+                  ? "bg-purple-500" 
+                  : "bg-voyagr"
               )} />
               <span className="text-xs text-gray-500">
                 {format(new Date(), "HH:mm:ss")}
@@ -33,9 +37,17 @@ const ConversationHistory = ({ messages }: ConversationHistoryProps) => {
                 "flex-1 text-sm px-4 py-2 rounded-lg transition-all duration-300",
                 message.role === "user" 
                   ? "bg-white/5 text-white" 
+                  : message.role === "api"
+                  ? "bg-purple-500/5 text-purple-300 font-mono" 
                   : "bg-voyagr/5 text-voyagr"
               )}>
-                {message.content}
+                {message.role === "api" ? (
+                  <pre className="whitespace-pre-wrap break-words">
+                    {message.content}
+                  </pre>
+                ) : (
+                  message.content
+                )}
               </div>
             </div>
           </div>

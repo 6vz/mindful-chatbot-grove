@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useConversation } from "@11labs/react";
 import { Mic, MicOff } from "lucide-react";
@@ -9,7 +10,7 @@ import ConversationHistory from "@/components/ConversationHistory";
 import { cn } from "@/lib/utils";
 
 interface Message {
-  role: "user" | "assistant";
+  role: "user" | "assistant" | "api";
   content: string;
 }
 
@@ -38,11 +39,15 @@ const Index = () => {
         ? message.message || JSON.stringify(message)
         : String(message);
       
-      console.log("Assistant message:", messageContent);
+      // Check if the message is an API response
+      const isApiResponse = typeof message === 'object' && 
+        ('apiResponse' in message || 'rawResponse' in message);
+      
+      console.log(isApiResponse ? "API Response:" : "Assistant message:", messageContent);
       
       setMessages(prev => [...prev, { 
-        role: "assistant", 
-        content: messageContent
+        role: isApiResponse ? "api" : "assistant", 
+        content: isApiResponse ? JSON.stringify(message, null, 2) : messageContent
       }]);
     },
     onSpeechStart: () => {
