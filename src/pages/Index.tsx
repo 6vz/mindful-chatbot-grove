@@ -136,14 +136,14 @@ const Index = () => {
       {/* Right Side - Split View */}
       <div className="w-4/5 flex flex-col bg-black">
         {/* Upper part - Placeholder */}
-        <div className="h-1/2 p-6 border-b border-gray-800">
+        <div className="h-3/4 p-6 border-b border-gray-800">
           <div className="h-full flex items-center justify-center text-gray-500">
             placeholder for future content
           </div>
         </div>
 
         {/* Lower part - Transcription */}
-        <div className="h-1/2 border-t border-gray-800 flex flex-col">
+        <div className="h-1/4 border-t border-gray-800 flex flex-col">
           <div className="flex-1 overflow-hidden">
             <ConversationHistory messages={messages} />
           </div>

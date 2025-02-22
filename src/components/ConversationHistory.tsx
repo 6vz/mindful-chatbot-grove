@@ -1,4 +1,4 @@
-
+import { useEffect, useRef } from 'react';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -13,6 +13,16 @@ interface ConversationHistoryProps {
 }
 
 const ConversationHistory = ({ messages }: ConversationHistoryProps) => {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]); // Scroll whenever messages change
+
   return (
     <ScrollArea className="h-full w-full p-4">
       <div className="space-y-4">
@@ -57,6 +67,7 @@ const ConversationHistory = ({ messages }: ConversationHistoryProps) => {
             Your conversation log will appear here
           </div>
         )}
+        <div ref={messagesEndRef} /> {/* Invisible element at the bottom */}
       </div>
     </ScrollArea>
   );
