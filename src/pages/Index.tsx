@@ -10,7 +10,7 @@ import ConversationHistory from "@/components/ConversationHistory";
 import { cn } from "@/lib/utils";
 
 interface Message {
-  role: "user" | "ai";
+  role: "user" | "assistant" | "api";
   content: string;
 }
 
@@ -43,7 +43,7 @@ const Index = () => {
       console.log(`${message.role} message:`, messageContent);
       
       setMessages(prev => [...prev, { 
-        role: message.source === "user" ? "user" : "ai", 
+        role: message.source === "user" ? "user" : "assistant", 
         content: messageContent
       }]);
     },
@@ -134,9 +134,21 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Right Side - Conversation */}
-      <div className="w-4/5 bg-black p-6">
-        <ConversationHistory messages={messages} />
+      {/* Right Side - Split View */}
+      <div className="w-4/5 flex flex-col bg-black">
+        {/* Upper part - Placeholder */}
+        <div className="h-1/2 p-6 border-b border-gray-800">
+          <div className="h-full flex items-center justify-center text-gray-500">
+            placeholder for future content
+          </div>
+        </div>
+
+        {/* Lower part - Transcription */}
+        <div className="h-1/2 border-t border-gray-800">
+          <div className="h-full overflow-y-auto">
+            <ConversationHistory messages={messages} />
+          </div>
+        </div>
       </div>
     </div>
   );
