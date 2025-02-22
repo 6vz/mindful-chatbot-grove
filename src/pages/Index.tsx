@@ -82,8 +82,14 @@ const Index = () => {
   return (
     <div className="flex min-h-screen">
       {/* Left Side - Control Panel */}
-      <div className="w-2/5 bg-voyagr p-6 flex flex-col">
-        <h1 className="font-pixelify text-4xl text-white mb-8">Voyagr</h1>
+      <div className="w-2/5 bg-voyagr p-6 flex flex-col relative">
+        <div className="flex justify-between items-start">
+          <h1 className="font-pixelify text-4xl text-white mb-8">Voyagr</h1>
+          <ConversationStatus 
+            status={conversation.status === "disconnecting" ? "disconnected" : conversation.status} 
+            isSpeaking={conversation.isSpeaking} 
+          />
+        </div>
         
         <div className="flex-1 flex flex-col justify-center items-center">
           <Button
@@ -108,11 +114,7 @@ const Index = () => {
           </Button>
         </div>
 
-        <div className="mt-auto space-y-4">
-          <ConversationStatus 
-            status={conversation.status === "disconnecting" ? "disconnected" : conversation.status} 
-            isSpeaking={conversation.isSpeaking} 
-          />
+        <div className="mt-auto">
           <VolumeControl volume={volume} onVolumeChange={handleVolumeChange} />
         </div>
       </div>
