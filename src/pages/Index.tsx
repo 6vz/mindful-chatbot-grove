@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useConversation } from "@11labs/react";
 import { Mic, MicOff } from "lucide-react";
@@ -10,7 +9,7 @@ import ConversationHistory from "@/components/ConversationHistory";
 import { cn } from "@/lib/utils";
 
 interface Message {
-  role: "user" | "assistant" | "api";
+  role: "user" | "ai";
   content: string;
 }
 
@@ -35,38 +34,35 @@ const Index = () => {
       });
     },
     onMessage: (message) => {
+      console.error(message)
       const messageContent = typeof message === 'object' 
         ? message.message || JSON.stringify(message)
         : String(message);
       
-      // Check if the message is an API response
-      const isApiResponse = typeof message === 'object' && 
-        ('apiResponse' in message || 'rawResponse' in message);
-      
-      console.log(isApiResponse ? "API Response:" : "Assistant message:", messageContent);
+      console.log(`${message.role} message:`, messageContent);
       
       setMessages(prev => [...prev, { 
-        role: isApiResponse ? "api" : "assistant", 
-        content: isApiResponse ? JSON.stringify(message, null, 2) : messageContent
+        role: message.source === "user" ? "user" : "ai", 
+        content: messageContent
       }]);
     },
     onSpeechStart: () => {
       console.log("Speech started");
     },
-    onSpeechEnd: (transcript) => {
-      if (transcript) {
-        const messageContent = typeof transcript === 'object' 
-          ? JSON.stringify(transcript) 
-          : transcript;
+    // onSpeechEnd: (transcript) => {
+    //   if (transcript) {
+    //     const messageContent = typeof transcript === 'object' 
+    //       ? JSON.stringify(transcript) 
+    //       : transcript;
         
-        console.log("User message:", messageContent);
+    //     console.log("User message:", messageContent);
         
-        setMessages(prev => [...prev, { 
-          role: "user", 
-          content: messageContent
-        }]);
-      }
-    },
+    //     setMessages(prev => [...prev, { 
+    //       role: "user", 
+    //       content: messageContent
+    //     }]);
+    //   }
+    // },
   });
 
   const handleStartConversation = async () => {
@@ -74,6 +70,9 @@ const Index = () => {
       console.log("Starting conversation session...");
       await conversation.startSession({
         agentId: "jnvvXwb0VcfpApNQH9mK",
+        dynamicVariables: {
+          user_name: "Aleksander Nawalny",
+        }
       });
     } catch (error) {
       console.error("Failed to start conversation:", error);
