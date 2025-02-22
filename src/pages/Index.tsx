@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useConversation } from "@11labs/react";
 import { Mic, MicOff } from "lucide-react";
@@ -6,6 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import ConversationStatus from "@/components/ConversationStatus";
 import VolumeControl from "@/components/VolumeControl";
 import ConversationHistory from "@/components/ConversationHistory";
+import { cn } from "@/lib/utils";
 
 interface Message {
   role: "user" | "assistant";
