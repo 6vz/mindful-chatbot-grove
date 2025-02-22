@@ -34,14 +34,25 @@ const Index = () => {
       });
     },
     onMessage: (message) => {
-      setMessages(prev => [...prev, { role: "assistant", content: message }]);
+      // Handle case where message might be an object
+      const messageContent = typeof message === 'object' 
+        ? message.message || JSON.stringify(message)
+        : String(message);
+      
+      setMessages(prev => [...prev, { 
+        role: "assistant", 
+        content: messageContent
+      }]);
     },
     onSpeechStart: () => {
       // Optional: Add any specific handling when the user starts speaking
     },
     onSpeechEnd: (transcript) => {
       if (transcript) {
-        setMessages(prev => [...prev, { role: "user", content: transcript }]);
+        setMessages(prev => [...prev, { 
+          role: "user", 
+          content: typeof transcript === 'object' ? JSON.stringify(transcript) : transcript 
+        }]);
       }
     },
   });
