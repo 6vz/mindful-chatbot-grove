@@ -201,11 +201,11 @@ const Index = () => {
         {/* Upper part - Flight Connections */}
         <div className="h-1/2 border-b border-gray-800">
           <ScrollArea className="h-full">
-            <div className="p-4 flex gap-4">
+            <div className="p-4 flex gap-4 h-full">
               {flightData.map((flight, index) => (
                 <div
                   key={index}
-                  className="w-[350px] shrink-0"
+                  className="w-[350px] shrink-0 h-full"
                 >
                   <FlightConnection {...flight} />
                 </div>
