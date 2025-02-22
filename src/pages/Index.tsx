@@ -1,5 +1,5 @@
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useConversation } from "@11labs/react";
 import { Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import ConversationHistory from "@/components/ConversationHistory";
 import { cn } from "@/lib/utils";
 
 interface Message {
-  role: "user" | "assistant" | "api";
+  role: "user" | "ai";
   content: string;
 }
 
@@ -18,15 +18,6 @@ const Index = () => {
   const [volume, setVolume] = useState(1);
   const [messages, setMessages] = useState<Message[]>([]);
   const { toast } = useToast();
-  const transcriptionRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Auto-scroll to latest message
-    if (transcriptionRef.current) {
-      transcriptionRef.current.scrollTop = transcriptionRef.current.scrollHeight;
-    }
-  }, [messages]);
-
   const conversation = useConversation({
     onConnect: () => {
       console.log("Connected to conversation");
@@ -143,43 +134,9 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Right Side - Split View */}
-      <div className="w-4/5 flex flex-col bg-black">
-        {/* Upper part - Planes Information (3/4) */}
-        <div className="h-3/4 p-6 border-b border-gray-800">
-          <div className="grid grid-cols-2 gap-6 h-full">
-            {/* Plane Card 1 */}
-            <div className="bg-gray-900 rounded-lg p-6 flex flex-col">
-              <h3 className="text-voyagr text-xl font-semibold mb-4">Flight AA123</h3>
-              <div className="text-white space-y-2">
-                <p>Status: In Flight</p>
-                <p>Departure: New York (JFK)</p>
-                <p>Arrival: Los Angeles (LAX)</p>
-                <p>Altitude: 35,000 ft</p>
-                <p>Speed: 550 mph</p>
-              </div>
-            </div>
-
-            {/* Plane Card 2 */}
-            <div className="bg-gray-900 rounded-lg p-6 flex flex-col">
-              <h3 className="text-voyagr text-xl font-semibold mb-4">Flight UA456</h3>
-              <div className="text-white space-y-2">
-                <p>Status: Scheduled</p>
-                <p>Departure: Chicago (ORD)</p>
-                <p>Arrival: Miami (MIA)</p>
-                <p>Departure Time: 14:30 EST</p>
-                <p>Gate: B12</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Lower part - Transcription (1/4) */}
-        <div className="h-1/4 border-t border-gray-800">
-          <div ref={transcriptionRef} className="h-full overflow-y-auto">
-            <ConversationHistory messages={messages} />
-          </div>
-        </div>
+      {/* Right Side - Conversation */}
+      <div className="w-4/5 bg-black p-6">
+        <ConversationHistory messages={messages} />
       </div>
     </div>
   );
