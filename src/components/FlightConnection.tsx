@@ -1,5 +1,5 @@
 
-import { format, addMinutes } from "date-fns";
+import { format } from "date-fns";
 import { Plane } from "lucide-react";
 
 interface Airport {
@@ -31,52 +31,50 @@ const FlightConnection = ({ flights, price, total_duration, type }: FlightConnec
   };
 
   const formatDateTime = (dateString: string) => {
-    return format(new Date(dateString), "HH:mm, MMM d");
+    return format(new Date(dateString), "HH:mm");
   };
 
   return (
-    <div className="bg-gray-900/50 rounded-lg p-6 text-white h-full">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-semibold text-voyagr">{type}</h2>
-        <span className="text-xl font-bold">${price}</span>
+    <div className="bg-gray-900/50 rounded-lg p-4 text-white h-full">
+      <div className="flex justify-between items-center mb-3">
+        <h2 className="text-lg font-semibold text-voyagr">{type}</h2>
+        <span className="text-lg font-bold">${price}</span>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-3">
         {flights.map((flight, index) => (
-          <div key={index} className="border-l-2 border-voyagr pl-4">
-            <div className="flex items-center gap-2 mb-2">
+          <div key={index} className="border-l border-voyagr pl-3">
+            <div className="flex items-center gap-2 text-xs mb-1">
               <span className="text-voyagr font-medium">{flight.airline}</span>
               <span className="text-gray-400">•</span>
               <span className="text-gray-400">{flight.flight_number}</span>
             </div>
 
-            <div className="grid grid-cols-[1fr,auto,1fr] gap-4 items-center">
+            <div className="grid grid-cols-[1fr,auto,1fr] gap-2 items-center">
               <div>
-                <div className="font-medium">{flight.departure_airport.id}</div>
-                <div className="text-sm text-gray-400">{formatDateTime(flight.departure_airport.time)}</div>
-                <div className="text-xs text-gray-500 truncate">{flight.departure_airport.name}</div>
+                <div className="font-medium text-sm">{flight.departure_airport.id}</div>
+                <div className="text-xs text-gray-400">{formatDateTime(flight.departure_airport.time)}</div>
               </div>
 
-              <div className="flex flex-col items-center px-4">
-                <Plane className="w-4 h-4 text-voyagr rotate-90 mb-1" />
-                <div className="text-xs text-gray-400">{formatDuration(flight.duration)}</div>
+              <div className="flex flex-col items-center px-2">
+                <Plane className="w-3 h-3 text-voyagr rotate-90" />
+                <div className="text-[10px] text-gray-400">{formatDuration(flight.duration)}</div>
               </div>
 
               <div>
-                <div className="font-medium">{flight.arrival_airport.id}</div>
-                <div className="text-sm text-gray-400">{formatDateTime(flight.arrival_airport.time)}</div>
-                <div className="text-xs text-gray-500 truncate">{flight.arrival_airport.name}</div>
+                <div className="font-medium text-sm">{flight.arrival_airport.id}</div>
+                <div className="text-xs text-gray-400">{formatDateTime(flight.arrival_airport.time)}</div>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="mt-6 pt-4 border-t border-gray-700 flex justify-between items-center">
-        <div className="text-sm text-gray-400">
-          Total duration: <span className="text-white">{formatDuration(total_duration)}</span>
+      <div className="mt-3 pt-2 border-t border-gray-700/50 flex justify-between items-center text-xs text-gray-400">
+        <div>
+          Total: <span className="text-white">{formatDuration(total_duration)}</span>
         </div>
-        <div className="text-sm text-gray-400">
+        <div>
           {flights.length} {flights.length === 1 ? 'flight' : 'flights'}
         </div>
       </div>
