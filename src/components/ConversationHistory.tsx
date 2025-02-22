@@ -14,7 +14,7 @@ interface ConversationHistoryProps {
 
 const ConversationHistory = ({ messages }: ConversationHistoryProps) => {
   return (
-    <ScrollArea className="h-[calc(100vh-3rem)] w-full p-4">
+    <ScrollArea className="h-full w-full p-4">
       <div className="space-y-4">
         {messages.map((message, index) => (
           <div

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useConversation } from "@11labs/react";
 import { Mic, MicOff } from "lucide-react";
@@ -84,9 +83,9 @@ const Index = () => {
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div className="h-screen flex overflow-hidden">
       {/* Left Side - Control Panel */}
-      <div className="w-1/5 bg-voyagr p-6 flex flex-col relative">
+      <div className="w-1/5 bg-voyagr p-6 flex flex-col">
         <div>
           <h1 className="font-pixelify text-4xl text-white mb-8">Voyagr</h1>
         </div>
@@ -144,8 +143,8 @@ const Index = () => {
         </div>
 
         {/* Lower part - Transcription */}
-        <div className="h-1/2 border-t border-gray-800">
-          <div className="h-full overflow-y-auto">
+        <div className="h-1/2 border-t border-gray-800 flex flex-col">
+          <div className="flex-1 overflow-hidden">
             <ConversationHistory messages={messages} />
           </div>
         </div>
