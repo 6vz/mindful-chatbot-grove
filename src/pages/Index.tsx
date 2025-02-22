@@ -33,6 +33,7 @@ const Index = () => {
       });
     },
     onMessage: (message) => {
+      // This is for messages from the AI assistant
       const messageContent = typeof message === 'object' 
         ? message.message || JSON.stringify(message)
         : String(message);
@@ -47,6 +48,7 @@ const Index = () => {
     },
     onSpeechEnd: (transcript) => {
       if (transcript) {
+        // This is for messages from the user
         setMessages(prev => [...prev, { 
           role: "user", 
           content: typeof transcript === 'object' ? JSON.stringify(transcript) : transcript 
@@ -85,10 +87,12 @@ const Index = () => {
       <div className="w-2/5 bg-voyagr p-6 flex flex-col relative">
         <div className="flex justify-between items-start">
           <h1 className="font-pixelify text-4xl text-white mb-8">Voyagr</h1>
-          <ConversationStatus 
-            status={conversation.status === "disconnecting" ? "disconnected" : conversation.status} 
-            isSpeaking={conversation.isSpeaking} 
-          />
+          <div className="flex items-end">
+            <ConversationStatus 
+              status={conversation.status === "disconnecting" ? "disconnected" : conversation.status} 
+              isSpeaking={conversation.isSpeaking} 
+            />
+          </div>
         </div>
         
         <div className="flex-1 flex flex-col justify-center items-center">
