@@ -20,7 +20,6 @@ const Index = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const { toast } = useToast();
 
-  // Mock flight data - now as an array to demonstrate multiple cards
   const flightData = [{
     flights: [
       {
@@ -58,7 +57,6 @@ const Index = () => {
     total_duration: 725,
     type: "Round trip"
   },
-  // Adding a second mock flight for demonstration
   {
     flights: [
       {
@@ -202,13 +200,20 @@ const Index = () => {
       <div className="w-4/5 flex flex-col bg-black">
         {/* Upper part - Flight Connections */}
         <div className="h-1/2 border-b border-gray-800">
-          <ScrollArea className="h-full">
-            <div className="p-4 space-y-4">
-              {flightData.map((flight, index) => (
-                <FlightConnection key={index} {...flight} />
-              ))}
-            </div>
-          </ScrollArea>
+          <div className="relative h-full p-4">
+            {flightData.map((flight, index) => (
+              <div
+                key={index}
+                className="absolute inset-x-4 transform transition-all duration-300 ease-in-out"
+                style={{
+                  top: `${index * 8}px`,
+                  zIndex: flightData.length - index,
+                }}
+              >
+                <FlightConnection {...flight} />
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Lower part - Transcription */}
