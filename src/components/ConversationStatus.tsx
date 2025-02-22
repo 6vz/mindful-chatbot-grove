@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 interface ConversationStatusProps {
-  status: "connected" | "disconnected";
+  status: "connected" | "disconnected" | "connecting";
   isSpeaking: boolean;
 }
 
@@ -16,10 +16,16 @@ const ConversationStatus = ({ status, isSpeaking }: ConversationStatusProps) => 
           "transition-all duration-300",
           status === "connected"
             ? "bg-green-50 text-green-700 border-green-300"
+            : status === "connecting"
+            ? "bg-yellow-50 text-yellow-700 border-yellow-300"
             : "bg-gray-50 text-gray-700 border-gray-300"
         )}
       >
-        {status === "connected" ? "Connected" : "Disconnected"}
+        {status === "connected" 
+          ? "Connected" 
+          : status === "connecting"
+          ? "Connecting..."
+          : "Disconnected"}
       </Badge>
       {status === "connected" && (
         <Badge

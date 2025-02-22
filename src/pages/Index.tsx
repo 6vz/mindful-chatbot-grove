@@ -31,7 +31,7 @@ const Index = () => {
   const handleStartConversation = async () => {
     try {
       await conversation.startSession({
-        agentId: "your_agent_id_here", // Replace with actual agent ID
+        agentId: "jnvvXwb0VcfpApNQH9mK",
       });
     } catch (error) {
       toast({
