@@ -111,9 +111,14 @@ const Index = () => {
             variant="outline"
             size="lg"
             className={cn(
-              "rounded-full w-20 h-20 bg-white hover:bg-gray-100 transition-all duration-300 hover:scale-105 mb-6",
+              "rounded-full w-20 h-20 bg-white hover:bg-gray-100",
+              "transition-all duration-500 ease-in-out transform hover:scale-110",
+              "shadow-lg hover:shadow-xl",
               conversation.status === "connected" && !conversation.isSpeaking && "animate-pulse-subtle",
-              conversation.status === "connected" && conversation.isSpeaking && "shadow-[0_0_30px_#FF6122] animate-pulse"
+              conversation.status === "connected" && conversation.isSpeaking && [
+                "shadow-[0_0_30px_#FF6122]",
+                "animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite]"
+              ]
             )}
             onClick={
               conversation.status === "connected"
@@ -121,11 +126,16 @@ const Index = () => {
                 : handleStartConversation
             }
           >
-            {conversation.status === "connected" ? (
-              <MicOff className="w-8 h-8 text-voyagr" />
-            ) : (
-              <Mic className="w-8 h-8 text-voyagr" />
-            )}
+            <div className={cn(
+              "transition-transform duration-500 ease-in-out",
+              conversation.status === "connected" && "hover:rotate-180"
+            )}>
+              {conversation.status === "connected" ? (
+                <MicOff className="w-8 h-8 text-voyagr" />
+              ) : (
+                <Mic className="w-8 h-8 text-voyagr" />
+              )}
+            </div>
           </Button>
         </div>
 

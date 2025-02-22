@@ -1,6 +1,7 @@
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 
 interface Message {
   role: "user" | "assistant";
@@ -18,37 +19,30 @@ const ConversationHistory = ({ messages }: ConversationHistoryProps) => {
         {messages.map((message, index) => (
           <div
             key={index}
-            className={`flex items-start gap-3 ${
-              message.role === "user" ? "flex-row-reverse" : "flex-row"
-            }`}
+            className="animate-fade-in"
           >
-            <div 
-              className={cn(
-                "w-2 h-2 mt-2 rounded-full",
+            <div className="flex items-center gap-3">
+              <div className={cn(
+                "w-1.5 h-1.5 rounded-full",
+                message.role === "user" ? "bg-white" : "bg-voyagr"
+              )} />
+              <span className="text-xs text-gray-500">
+                {format(new Date(), "HH:mm:ss")}
+              </span>
+              <div className={cn(
+                "flex-1 text-sm px-4 py-2 rounded-lg transition-all duration-300",
                 message.role === "user" 
-                  ? "bg-white" 
-                  : "bg-voyagr animate-pulse"
-              )} 
-            />
-            <div
-              className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                message.role === "user"
-                  ? "bg-white/10 text-white"
-                  : "bg-voyagr/10 text-white"
-              }`}
-            >
-              <p className="text-sm">
-                <span className="font-semibold text-xs opacity-50 block mb-1">
-                  {message.role === "user" ? "You" : "Assistant"}
-                </span>
+                  ? "bg-white/5 text-white" 
+                  : "bg-voyagr/5 text-voyagr"
+              )}>
                 {message.content}
-              </p>
+              </div>
             </div>
           </div>
         ))}
         {messages.length === 0 && (
-          <div className="text-center text-gray-500 text-sm">
-            Your conversation will appear here
+          <div className="text-center text-gray-500 text-sm animate-pulse">
+            Your conversation log will appear here
           </div>
         )}
       </div>
