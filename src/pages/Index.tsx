@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useRef, useEffect } from "react";
 import { useConversation } from "@11labs/react";
 import { Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,7 @@ import ConversationHistory from "@/components/ConversationHistory";
 import { cn } from "@/lib/utils";
 
 interface Message {
-  role: "user" | "ai";
+  role: "user" | "assistant" | "api";
   content: string;
 }
 
@@ -17,6 +18,14 @@ const Index = () => {
   const [volume, setVolume] = useState(1);
   const [messages, setMessages] = useState<Message[]>([]);
   const { toast } = useToast();
+  const transcriptionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (transcriptionRef.current) {
+      transcriptionRef.current.scrollTop = transcriptionRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   const conversation = useConversation({
     onConnect: () => {
       console.log("Connected to conversation");
@@ -99,7 +108,7 @@ const Index = () => {
   return (
     <div className="flex min-h-screen">
       {/* Left Side - Control Panel */}
-      <div className="w-2/5 bg-voyagr p-6 flex flex-col relative">
+      <div className="w-1/4 bg-voyagr p-6 flex flex-col relative">
         <div className="flex justify-between items-start">
           <h1 className="font-pixelify text-4xl text-white mb-8">Voyagr</h1>
           <div className="flex items-end">
@@ -148,9 +157,21 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Right Side - Conversation */}
-      <div className="w-3/5 bg-black p-6">
-        <ConversationHistory messages={messages} />
+      {/* Right Side - Split View */}
+      <div className="w-3/4 flex flex-col bg-black">
+        {/* Upper part - Planes placeholder */}
+        <div className="flex-1 p-6 border-b border-gray-800">
+          <div className="h-full flex items-center justify-center text-gray-500">
+            planes here :333
+          </div>
+        </div>
+
+        {/* Lower part - Transcription */}
+        <div className="h-1/6 border-t border-gray-800">
+          <div ref={transcriptionRef} className="h-full overflow-y-auto">
+            <ConversationHistory messages={messages} />
+          </div>
+        </div>
       </div>
     </div>
   );
