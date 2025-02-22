@@ -6,6 +6,7 @@ import { useToast } from "@/components/ui/use-toast";
 import ConversationStatus from "@/components/ConversationStatus";
 import VolumeControl from "@/components/VolumeControl";
 import ConversationHistory from "@/components/ConversationHistory";
+import FlightConnection from "@/components/FlightConnection";
 import { cn } from "@/lib/utils";
 
 interface Message {
@@ -17,6 +18,46 @@ const Index = () => {
   const [volume, setVolume] = useState(1);
   const [messages, setMessages] = useState<Message[]>([]);
   const { toast } = useToast();
+
+  // Mock flight data
+  const flightData = {
+    flights: [
+      {
+        airline: "Finnair",
+        departure_airport: {
+          id: "WAW",
+          name: "Warsaw Frederic Chopin",
+          time: "2025-04-02 13:00"
+        },
+        arrival_airport: {
+          id: "HEL",
+          name: "Helsinki Airport",
+          time: "2025-04-02 15:40"
+        },
+        duration: 100,
+        flight_number: "AY 1144"
+      },
+      {
+        airline: "Finnair",
+        departure_airport: {
+          id: "HEL",
+          name: "Helsinki Airport",
+          time: "2025-04-02 17:15"
+        },
+        arrival_airport: {
+          id: "JFK",
+          name: "John F. Kennedy International Airport",
+          time: "2025-04-02 19:05"
+        },
+        duration: 530,
+        flight_number: "AY 15"
+      }
+    ],
+    price: 629,
+    total_duration: 725,
+    type: "Round trip"
+  };
+
   const conversation = useConversation({
     onConnect: () => {
       console.log("Connected to conversation");
@@ -135,15 +176,13 @@ const Index = () => {
 
       {/* Right Side - Split View */}
       <div className="w-4/5 flex flex-col bg-black">
-        {/* Upper part - Placeholder */}
-        <div className="h-3/4 p-6 border-b border-gray-800">
-          <div className="h-full flex items-center justify-center text-gray-500">
-            placeholder for future content
-          </div>
+        {/* Upper part - Flight Connection */}
+        <div className="h-1/2 p-6 border-b border-gray-800">
+          <FlightConnection {...flightData} />
         </div>
 
         {/* Lower part - Transcription */}
-        <div className="h-1/4 border-t border-gray-800 flex flex-col">
+        <div className="h-1/2 border-t border-gray-800 flex flex-col">
           <div className="flex-1 overflow-hidden">
             <ConversationHistory messages={messages} />
           </div>
