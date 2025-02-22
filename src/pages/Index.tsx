@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useConversation } from "@11labs/react";
 import { Mic, MicOff } from "lucide-react";
@@ -49,20 +50,6 @@ const Index = () => {
     onSpeechStart: () => {
       console.log("Speech started");
     },
-    // onSpeechEnd: (transcript) => {
-    //   if (transcript) {
-    //     const messageContent = typeof transcript === 'object' 
-    //       ? JSON.stringify(transcript) 
-    //       : transcript;
-        
-    //     console.log("User message:", messageContent);
-        
-    //     setMessages(prev => [...prev, { 
-    //       role: "user", 
-    //       content: messageContent
-    //     }]);
-    //   }
-    // },
   });
 
   const handleStartConversation = async () => {
@@ -99,18 +86,12 @@ const Index = () => {
   return (
     <div className="flex min-h-screen">
       {/* Left Side - Control Panel */}
-      <div className="w-2/5 bg-voyagr p-6 flex flex-col relative">
-        <div className="flex justify-between items-start">
+      <div className="w-1/5 bg-voyagr p-6 flex flex-col relative">
+        <div>
           <h1 className="font-pixelify text-4xl text-white mb-8">Voyagr</h1>
-          <div className="flex items-end">
-            <ConversationStatus 
-              status={conversation.status === "disconnecting" ? "disconnected" : conversation.status} 
-              isSpeaking={conversation.isSpeaking} 
-            />
-          </div>
         </div>
         
-        <div className="flex-1 flex flex-col justify-center items-center">
+        <div className="flex-1 flex flex-col justify-center items-center space-y-4">
           <Button
             variant="outline"
             size="lg"
@@ -141,6 +122,11 @@ const Index = () => {
               )}
             </div>
           </Button>
+
+          <ConversationStatus 
+            status={conversation.status === "disconnecting" ? "disconnected" : conversation.status} 
+            isSpeaking={conversation.isSpeaking} 
+          />
         </div>
 
         <div className="mt-auto">
@@ -149,7 +135,7 @@ const Index = () => {
       </div>
 
       {/* Right Side - Conversation */}
-      <div className="w-3/5 bg-black p-6">
+      <div className="w-4/5 bg-black p-6">
         <ConversationHistory messages={messages} />
       </div>
     </div>
