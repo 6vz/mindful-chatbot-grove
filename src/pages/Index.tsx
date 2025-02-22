@@ -200,20 +200,18 @@ const Index = () => {
       <div className="w-4/5 flex flex-col bg-black">
         {/* Upper part - Flight Connections */}
         <div className="h-1/2 border-b border-gray-800">
-          <div className="relative h-full p-4">
-            {flightData.map((flight, index) => (
-              <div
-                key={index}
-                className="absolute inset-x-4 transform transition-all duration-300 ease-in-out"
-                style={{
-                  top: `${index * 8}px`,
-                  zIndex: flightData.length - index,
-                }}
-              >
-                <FlightConnection {...flight} />
-              </div>
-            ))}
-          </div>
+          <ScrollArea className="h-full">
+            <div className="p-4 flex gap-4">
+              {flightData.map((flight, index) => (
+                <div
+                  key={index}
+                  className="w-[350px] shrink-0"
+                >
+                  <FlightConnection {...flight} />
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
         </div>
 
         {/* Lower part - Transcription */}
