@@ -10,7 +10,7 @@ interface VolumeControlProps {
 const VolumeControl = ({ volume, onVolumeChange }: VolumeControlProps) => {
   return (
     <div className="flex items-center gap-4 w-full max-w-[200px]">
-      <Volume2 className="w-4 h-4 text-gray-500" />
+      <Volume2 className="w-4 h-4 text-white" />
       <Slider
         value={[volume]}
         onValueChange={onVolumeChange}

@@ -13,12 +13,12 @@ const ConversationStatus = ({ status, isSpeaking }: ConversationStatusProps) => 
       <Badge
         variant="outline"
         className={cn(
-          "transition-all duration-300",
+          "transition-all duration-300 border-white text-white",
           status === "connected"
-            ? "bg-green-50 text-green-700 border-green-300"
+            ? "bg-white/10"
             : status === "connecting"
-            ? "bg-yellow-50 text-yellow-700 border-yellow-300"
-            : "bg-gray-50 text-gray-700 border-gray-300"
+            ? "bg-white/5"
+            : "bg-white/5"
         )}
       >
         {status === "connected" 
@@ -31,10 +31,10 @@ const ConversationStatus = ({ status, isSpeaking }: ConversationStatusProps) => 
         <Badge
           variant="outline"
           className={cn(
-            "transition-all duration-300",
+            "transition-all duration-300 border-white text-white",
             isSpeaking
-              ? "bg-blue-50 text-blue-700 border-blue-300"
-              : "bg-gray-50 text-gray-700 border-gray-300"
+              ? "bg-white/10"
+              : "bg-white/5"
           )}
         >
           {isSpeaking ? "Speaking" : "Listening"}

@@ -12,20 +12,23 @@ interface ConversationHistoryProps {
 
 const ConversationHistory = ({ messages }: ConversationHistoryProps) => {
   return (
-    <ScrollArea className="h-[200px] w-full rounded-md border bg-white p-4">
+    <ScrollArea className="h-[calc(100vh-3rem)] w-full p-4">
       <div className="space-y-4">
         {messages.map((message, index) => (
           <div
             key={index}
-            className={`flex ${
-              message.role === "user" ? "justify-end" : "justify-start"
+            className={`flex items-start gap-3 ${
+              message.role === "user" ? "flex-row-reverse" : "flex-row"
             }`}
           >
+            <div className={`w-2 h-2 mt-2 rounded-full ${
+              message.role === "user" ? "bg-white" : "bg-voyagr"
+            }`} />
             <div
               className={`max-w-[80%] rounded-lg px-4 py-2 ${
                 message.role === "user"
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-100 text-gray-800"
+                  ? "bg-white/10 text-white"
+                  : "bg-voyagr/10 text-white"
               }`}
             >
               <p className="text-sm">{message.content}</p>
@@ -33,7 +36,7 @@ const ConversationHistory = ({ messages }: ConversationHistoryProps) => {
           </div>
         ))}
         {messages.length === 0 && (
-          <div className="text-center text-gray-400 text-sm">
+          <div className="text-center text-gray-500 text-sm">
             Your conversation will appear here
           </div>
         )}
