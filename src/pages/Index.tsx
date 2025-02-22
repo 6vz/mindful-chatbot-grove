@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useConversation } from "@11labs/react";
 import { Mic, MicOff } from "lucide-react";
@@ -20,12 +19,14 @@ const Index = () => {
   const { toast } = useToast();
   const conversation = useConversation({
     onConnect: () => {
+      console.log("Connected to conversation");
       toast({
         title: "Connected",
         description: "Ready to start conversation",
       });
     },
     onError: (error) => {
+      console.error("Conversation error:", error);
       toast({
         title: "Error",
         description: error.message,
@@ -33,10 +34,11 @@ const Index = () => {
       });
     },
     onMessage: (message) => {
-      // This is for messages from the AI assistant
       const messageContent = typeof message === 'object' 
         ? message.message || JSON.stringify(message)
         : String(message);
+      
+      console.log("Assistant message:", messageContent);
       
       setMessages(prev => [...prev, { 
         role: "assistant", 
@@ -44,14 +46,19 @@ const Index = () => {
       }]);
     },
     onSpeechStart: () => {
-      // Optional: Add any specific handling when the user starts speaking
+      console.log("Speech started");
     },
     onSpeechEnd: (transcript) => {
       if (transcript) {
-        // This is for messages from the user
+        const messageContent = typeof transcript === 'object' 
+          ? JSON.stringify(transcript) 
+          : transcript;
+        
+        console.log("User message:", messageContent);
+        
         setMessages(prev => [...prev, { 
           role: "user", 
-          content: typeof transcript === 'object' ? JSON.stringify(transcript) : transcript 
+          content: messageContent
         }]);
       }
     },
@@ -59,10 +66,12 @@ const Index = () => {
 
   const handleStartConversation = async () => {
     try {
+      console.log("Starting conversation session...");
       await conversation.startSession({
         agentId: "jnvvXwb0VcfpApNQH9mK",
       });
     } catch (error) {
+      console.error("Failed to start conversation:", error);
       toast({
         title: "Error",
         description: "Failed to start conversation",
@@ -72,11 +81,13 @@ const Index = () => {
   };
 
   const handleEndConversation = async () => {
+    console.log("Ending conversation session...");
     await conversation.endSession();
   };
 
   const handleVolumeChange = async (value: number[]) => {
     const newVolume = value[0];
+    console.log("Volume changed to:", newVolume);
     setVolume(newVolume);
     await conversation.setVolume({ volume: newVolume });
   };

@@ -9,11 +9,11 @@ interface ConversationStatusProps {
 
 const ConversationStatus = ({ status, isSpeaking }: ConversationStatusProps) => {
   return (
-    <div className="flex flex-col items-start gap-2">
+    <div className="flex flex-col items-end gap-2">
       <Badge
         variant="outline"
         className={cn(
-          "transition-all duration-300 border-white text-white",
+          "transition-all duration-300 border-white text-white w-28 text-center",
           status === "connected"
             ? "bg-white/10"
             : status === "connecting"
@@ -31,7 +31,7 @@ const ConversationStatus = ({ status, isSpeaking }: ConversationStatusProps) => 
         <Badge
           variant="outline"
           className={cn(
-            "transition-all duration-300 border-white text-white",
+            "transition-all duration-300 border-white text-white w-28 text-center",
             isSpeaking
               ? "bg-white/10"
               : "bg-white/5"
