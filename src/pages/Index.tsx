@@ -1,5 +1,4 @@
-
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useConversation } from "@11labs/react";
 import { Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,7 +9,7 @@ import ConversationHistory from "@/components/ConversationHistory";
 import { cn } from "@/lib/utils";
 
 interface Message {
-  role: "user" | "assistant" | "api";
+  role: "user" | "ai";
   content: string;
 }
 
@@ -18,14 +17,6 @@ const Index = () => {
   const [volume, setVolume] = useState(1);
   const [messages, setMessages] = useState<Message[]>([]);
   const { toast } = useToast();
-  const transcriptionRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (transcriptionRef.current) {
-      transcriptionRef.current.scrollTop = transcriptionRef.current.scrollHeight;
-    }
-  }, [messages]);
-
   const conversation = useConversation({
     onConnect: () => {
       console.log("Connected to conversation");
@@ -43,6 +34,7 @@ const Index = () => {
       });
     },
     onMessage: (message) => {
+      console.error(message)
       const messageContent = typeof message === 'object' 
         ? message.message || JSON.stringify(message)
         : String(message);
@@ -50,13 +42,27 @@ const Index = () => {
       console.log(`${message.role} message:`, messageContent);
       
       setMessages(prev => [...prev, { 
-        role: message.source === "user" ? "user" : "assistant", 
+        role: message.source === "user" ? "user" : "ai", 
         content: messageContent
       }]);
     },
     onSpeechStart: () => {
       console.log("Speech started");
     },
+    // onSpeechEnd: (transcript) => {
+    //   if (transcript) {
+    //     const messageContent = typeof transcript === 'object' 
+    //       ? JSON.stringify(transcript) 
+    //       : transcript;
+        
+    //     console.log("User message:", messageContent);
+        
+    //     setMessages(prev => [...prev, { 
+    //       role: "user", 
+    //       content: messageContent
+    //     }]);
+    //   }
+    // },
   });
 
   const handleStartConversation = async () => {
@@ -93,12 +99,18 @@ const Index = () => {
   return (
     <div className="flex min-h-screen">
       {/* Left Side - Control Panel */}
-      <div className="w-1/4 bg-voyagr p-6 flex flex-col relative">
-        <div className="mb-8">
-          <h1 className="font-pixelify text-4xl text-white">Voyagr</h1>
+      <div className="w-2/5 bg-voyagr p-6 flex flex-col relative">
+        <div className="flex justify-between items-start">
+          <h1 className="font-pixelify text-4xl text-white mb-8">Voyagr</h1>
+          <div className="flex items-end">
+            <ConversationStatus 
+              status={conversation.status === "disconnecting" ? "disconnected" : conversation.status} 
+              isSpeaking={conversation.isSpeaking} 
+            />
+          </div>
         </div>
         
-        <div className="flex-1 flex flex-col justify-center items-center gap-4">
+        <div className="flex-1 flex flex-col justify-center items-center">
           <Button
             variant="outline"
             size="lg"
@@ -129,11 +141,6 @@ const Index = () => {
               )}
             </div>
           </Button>
-
-          <ConversationStatus 
-            status={conversation.status === "disconnecting" ? "disconnected" : conversation.status} 
-            isSpeaking={conversation.isSpeaking} 
-          />
         </div>
 
         <div className="mt-auto">
@@ -141,21 +148,9 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Right Side - Split View */}
-      <div className="w-3/4 flex flex-col bg-black">
-        {/* Upper part - Planes placeholder */}
-        <div className="flex-1 p-6 border-b border-gray-800">
-          <div className="h-full flex items-center justify-center text-gray-500">
-            planes here :333
-          </div>
-        </div>
-
-        {/* Lower part - Transcription */}
-        <div className="h-1/6 border-t border-gray-800">
-          <div ref={transcriptionRef} className="h-full overflow-y-auto">
-            <ConversationHistory messages={messages} />
-          </div>
-        </div>
+      {/* Right Side - Conversation */}
+      <div className="w-3/5 bg-black p-6">
+        <ConversationHistory messages={messages} />
       </div>
     </div>
   );
