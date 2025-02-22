@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useConversation } from "@11labs/react";
 import { Mic, MicOff } from "lucide-react";
@@ -81,14 +80,18 @@ const Index = () => {
   return (
     <div className="flex min-h-screen">
       {/* Left Side - Control Panel */}
-      <div className="w-1/3 bg-voyagr p-6 flex flex-col">
+      <div className="w-2/5 bg-voyagr p-6 flex flex-col">
         <h1 className="font-pixelify text-4xl text-white mb-8">Voyagr</h1>
         
         <div className="flex-1 flex flex-col justify-center items-center">
           <Button
             variant="outline"
             size="lg"
-            className="rounded-full w-20 h-20 bg-white hover:bg-gray-100 transition-all duration-300 hover:scale-105 mb-6"
+            className={cn(
+              "rounded-full w-20 h-20 bg-white hover:bg-gray-100 transition-all duration-300 hover:scale-105 mb-6",
+              conversation.status === "connected" && !conversation.isSpeaking && "animate-pulse-subtle",
+              conversation.status === "connected" && conversation.isSpeaking && "shadow-[0_0_30px_#FF6122] animate-pulse"
+            )}
             onClick={
               conversation.status === "connected"
                 ? handleEndConversation
@@ -113,7 +116,7 @@ const Index = () => {
       </div>
 
       {/* Right Side - Conversation */}
-      <div className="w-2/3 bg-black p-6">
+      <div className="w-3/5 bg-black p-6">
         <ConversationHistory messages={messages} />
       </div>
     </div>

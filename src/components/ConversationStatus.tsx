@@ -9,7 +9,7 @@ interface ConversationStatusProps {
 
 const ConversationStatus = ({ status, isSpeaking }: ConversationStatusProps) => {
   return (
-    <div className="flex items-center justify-center gap-2">
+    <div className="flex flex-col items-start gap-2">
       <Badge
         variant="outline"
         className={cn(

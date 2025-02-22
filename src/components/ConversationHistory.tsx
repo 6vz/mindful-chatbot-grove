@@ -1,5 +1,6 @@
 
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 interface Message {
   role: "user" | "assistant";
@@ -21,9 +22,14 @@ const ConversationHistory = ({ messages }: ConversationHistoryProps) => {
               message.role === "user" ? "flex-row-reverse" : "flex-row"
             }`}
           >
-            <div className={`w-2 h-2 mt-2 rounded-full ${
-              message.role === "user" ? "bg-white" : "bg-voyagr"
-            }`} />
+            <div 
+              className={cn(
+                "w-2 h-2 mt-2 rounded-full",
+                message.role === "user" 
+                  ? "bg-white" 
+                  : "bg-voyagr animate-pulse"
+              )} 
+            />
             <div
               className={`max-w-[80%] rounded-lg px-4 py-2 ${
                 message.role === "user"
@@ -31,7 +37,12 @@ const ConversationHistory = ({ messages }: ConversationHistoryProps) => {
                   : "bg-voyagr/10 text-white"
               }`}
             >
-              <p className="text-sm">{message.content}</p>
+              <p className="text-sm">
+                <span className="font-semibold text-xs opacity-50 block mb-1">
+                  {message.role === "user" ? "You" : "Assistant"}
+                </span>
+                {message.content}
+              </p>
             </div>
           </div>
         ))}
