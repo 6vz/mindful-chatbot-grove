@@ -7,6 +7,7 @@ import ConversationStatus from "@/components/ConversationStatus";
 import VolumeControl from "@/components/VolumeControl";
 import ConversationHistory from "@/components/ConversationHistory";
 import FlightConnection from "@/components/FlightConnection";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
 interface Message {
@@ -19,8 +20,8 @@ const Index = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const { toast } = useToast();
 
-  // Mock flight data
-  const flightData = {
+  // Mock flight data - now as an array to demonstrate multiple cards
+  const flightData = [{
     flights: [
       {
         airline: "Finnair",
@@ -56,7 +57,30 @@ const Index = () => {
     price: 629,
     total_duration: 725,
     type: "Round trip"
-  };
+  },
+  // Adding a second mock flight for demonstration
+  {
+    flights: [
+      {
+        airline: "Finnair",
+        departure_airport: {
+          id: "WAW",
+          name: "Warsaw Frederic Chopin",
+          time: "2025-04-03 10:00"
+        },
+        arrival_airport: {
+          id: "JFK",
+          name: "John F. Kennedy International Airport",
+          time: "2025-04-03 14:30"
+        },
+        duration: 510,
+        flight_number: "AY 123"
+      }
+    ],
+    price: 549,
+    total_duration: 510,
+    type: "Direct"
+  }];
 
   const conversation = useConversation({
     onConnect: () => {
@@ -176,9 +200,15 @@ const Index = () => {
 
       {/* Right Side - Split View */}
       <div className="w-4/5 flex flex-col bg-black">
-        {/* Upper part - Flight Connection */}
-        <div className="h-1/2 p-6 border-b border-gray-800">
-          <FlightConnection {...flightData} />
+        {/* Upper part - Flight Connections */}
+        <div className="h-1/2 border-b border-gray-800">
+          <ScrollArea className="h-full">
+            <div className="p-4 space-y-4">
+              {flightData.map((flight, index) => (
+                <FlightConnection key={index} {...flight} />
+              ))}
+            </div>
+          </ScrollArea>
         </div>
 
         {/* Lower part - Transcription */}
