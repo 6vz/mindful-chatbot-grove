@@ -8,9 +8,16 @@ import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/components/ui/use-toast";
 import ConversationStatus from "@/components/ConversationStatus";
 import VolumeControl from "@/components/VolumeControl";
+import ConversationHistory from "@/components/ConversationHistory";
+
+interface Message {
+  role: "user" | "assistant";
+  content: string;
+}
 
 const Index = () => {
   const [volume, setVolume] = useState(1);
+  const [messages, setMessages] = useState<Message[]>([]);
   const { toast } = useToast();
   const conversation = useConversation({
     onConnect: () => {
@@ -25,6 +32,17 @@ const Index = () => {
         description: error.message,
         variant: "destructive",
       });
+    },
+    onMessage: (message) => {
+      setMessages(prev => [...prev, { role: "assistant", content: message }]);
+    },
+    onSpeechStart: () => {
+      // Optional: Add any specific handling when the user starts speaking
+    },
+    onSpeechEnd: (transcript) => {
+      if (transcript) {
+        setMessages(prev => [...prev, { role: "user", content: transcript }]);
+      }
     },
   });
 
@@ -61,7 +79,12 @@ const Index = () => {
             <p className="text-sm text-gray-500">Click the microphone to start talking</p>
           </div>
 
-          <ConversationStatus status={conversation.status} isSpeaking={conversation.isSpeaking} />
+          <ConversationStatus 
+            status={conversation.status === "disconnecting" ? "disconnected" : conversation.status} 
+            isSpeaking={conversation.isSpeaking} 
+          />
+
+          <ConversationHistory messages={messages} />
           
           <div className="flex flex-col items-center gap-6">
             <Button
