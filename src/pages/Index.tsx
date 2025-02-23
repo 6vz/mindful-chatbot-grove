@@ -7,7 +7,7 @@ import ConversationStatus from "@/components/ConversationStatus";
 import VolumeControl from "@/components/VolumeControl";
 import ConversationHistory from "@/components/ConversationHistory";
 import FlightConnection from "@/components/FlightConnection";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
 interface Message {
@@ -78,7 +78,67 @@ const Index = () => {
     price: 549,
     total_duration: 510,
     type: "Direct"
-  }];
+  },
+  {
+    flights: [
+      {
+        airline: "Fe!n Fe!n Fe!n Airways",
+        departure_airport: {
+          id: "JFK",
+          name: "John F. Kennedy International Airport",
+          time: "2001-09-11 08:46"
+        },
+        arrival_airport: {
+          id: "WTC",
+          name: "World Trade Center",
+          time: "2001-09-11 09:03"
+        },
+        duration: 17,
+        flight_number: "FEIN 11"
+      },
+      {
+        airline: "Fe!n Fe!n Fe!n Airways",
+        departure_airport: {
+          id: "WTC",
+          name: "World Trade Center",
+          time: "2001-09-11 09:03"
+        },
+        arrival_airport: {
+          id: "JFK",
+          name: "John F. Kennedy International Airport",
+          time: "2001-09-11 09:20"
+        },
+        duration: 17,
+        flight_number: "FEIN 11"
+      }
+    ],
+    price: 0,
+    total_duration: 17,
+    type: "Direct"
+    },
+  {
+    flights: [
+      {
+        airline: "Fe!n Fe!n Fe!n Airways",
+        departure_airport: {
+          id: "JFK",
+          name: "John F. Kennedy International Airport",
+          time: "2001-09-11 08:46"
+        },
+        arrival_airport: {
+          id: "WTC",
+          name: "World Trade Center",
+          time: "2001-09-11 09:03"
+        },
+        duration: 17,
+        flight_number: "FEIN 11"
+      }
+    ],
+    price: 0,
+    total_duration: 17,
+    type: "Direct"
+  }
+];
 
   const conversation = useConversation({
     onConnect: () => {
@@ -200,17 +260,18 @@ const Index = () => {
       <div className="w-4/5 flex flex-col bg-black">
         {/* Upper part - Flight Connections */}
         <div className="h-1/2 border-b border-gray-800">
-          <ScrollArea className="h-full">
-            <div className="p-4 flex gap-4 h-full">
+          <ScrollArea className="h-full w-full">
+            <div className="flex h-full p-4 gap-4">
               {flightData.map((flight, index) => (
                 <div
                   key={index}
-                  className="w-[350px] shrink-0 h-full"
+                  className="w-[300px] h-full flex-none"
                 >
                   <FlightConnection {...flight} />
                 </div>
               ))}
             </div>
+            <ScrollBar orientation="horizontal" />
           </ScrollArea>
         </div>
 
