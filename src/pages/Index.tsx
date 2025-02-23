@@ -40,7 +40,7 @@ interface FlightData {
 
 interface ApiResponse {
   flights: FlightData[];
-  selected_flight: FlightData;
+  selected_flights: FlightData[];
 }
 
 const Index = () => {
@@ -64,9 +64,9 @@ const Index = () => {
         }
 
         const data: ApiResponse = await response.json();
-        
-        if (data.selected_flight) {
-          setFlightData([data.selected_flight]);
+
+        if (data.selected_flights && data.selected_flights.length > data.flights.length) {
+          setFlightData(data.selected_flights);
         } else if (data.flights && data.flights.length > 0) {
           setFlightData(data.flights);
         } else {
@@ -122,7 +122,8 @@ const Index = () => {
       console.log("Speech started");
     },
     onUserStartSpeaking: () => {
-      console.log("User started speaking, stopping AI response");
+      console.log("User started speaking, stopping AI audio");
+      // stop AI model from speaking - .stopSpeaking does not work, and model has to be able to talk again when next message appear
       conversation.stopSpeaking();
     },
   });
@@ -236,7 +237,7 @@ const Index = () => {
         <div className="mt-auto">
           <VolumeControl volume={volume} onVolumeChange={handleVolumeChange} />
         </div>
-        <p> id: {conversationId} </p>
+        <p className="text-xs text-CA4E1C font-pixelify mt-5">Session ID:<br />{conversationId}</p>
       </div>
 
       {/* Right Side - Split View */}
@@ -256,8 +257,9 @@ const Index = () => {
                 ))}
               </div>
             ) : (
-              <div className="h-full flex items-center justify-center text-gray-500 italic">
-                How much longer...
+              <div className="h-full flex items-center justify-center text-gray-500 text-center italic">
+               Calculating the force of impact on the runway of your Ryanair flight...<br />
+               Please stay with us. We are working on it, admittedly slowly - but we are working.
               </div>
             )}
             <ScrollBar orientation="horizontal" />
