@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useConversation } from "@11labs/react";
 import { Mic, MicOff } from "lucide-react";
@@ -7,7 +8,6 @@ import ConversationStatus from "@/components/ConversationStatus";
 import VolumeControl from "@/components/VolumeControl";
 import ConversationHistory from "@/components/ConversationHistory";
 import FlightConnection from "@/components/FlightConnection";
-import HotelCard from "@/components/HotelCard";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
@@ -43,52 +43,6 @@ interface ApiResponse {
   flights: FlightData[];
   selected_flights: FlightData[];
 }
-
-const DUMMY_HOTEL = {
-  name: "The Procrastinator's Paradise",
-  hotel_class: "4-star hotel",
-  amenities: [
-    "Free Wi-Fi (when it feels like working)",
-    "Breakfast (served until whenever)",
-    "Parking (somewhere... probably)",
-    "Pool (currently occupied by ducks)",
-    "24/7 Room Service (response time may vary by decades)",
-    "Fitness Center (equipment from the future)",
-    "Spa (staffed by cats)",
-    "Business Center (powered by hamsters)",
-  ],
-  check_in_time: "Eventually PM",
-  check_out_time: "When you're ready",
-  price: {
-    lowest: "$42/night",
-    extracted_lowest: 42
-  },
-  nearby_places: [
-    {
-      name: "The Eternal Queue Coffee Shop",
-      transportations: [
-        {
-          duration: "5 years",
-          type: "Walking"
-        },
-        {
-          duration: "3 centuries",
-          type: "Public transport"
-        }
-      ]
-    },
-    {
-      name: "Museum of Incomplete Tasks",
-      transportations: [
-        {
-          duration: "2 deadlines",
-          type: "Walking"
-        }
-      ]
-    }
-  ],
-  overall_rating: 4.2
-};
 
 const Index = () => {
   const [volume, setVolume] = useState(1);
@@ -165,8 +119,9 @@ const Index = () => {
         content: messageContent
       }]);
 
+      // If it's an assistant message and we have speech capabilities, start speaking
       if (message.source === "assistant" && conversation.status === "connected") {
-        conversation.startSpeaking();
+        conversation.startSpeaking(); // Use startSpeaking instead of speak
       }
     },
     onSpeechStart: () => {
@@ -175,11 +130,12 @@ const Index = () => {
     onUserStartSpeaking: () => {
       console.log("User started speaking, pausing AI audio");
       if (conversation.isSpeaking) {
-        conversation.stopSpeaking();
+        conversation.stopSpeaking(); // Use stopSpeaking instead of pauseSpeaking
       }
     },
     onUserStopSpeaking: () => {
       console.log("User stopped speaking");
+      // Speech will automatically resume for new messages via onMessage
     },
   });
 
@@ -245,6 +201,7 @@ const Index = () => {
 
   return (
     <div className="h-screen flex overflow-hidden">
+      {/* Left Side - Control Panel */}
       <div className="w-1/5 bg-voyagr p-6 flex flex-col">
         <div>
           <h1 className="font-pixelify text-4xl text-white mb-8">Voyagr</h1>
@@ -294,35 +251,33 @@ const Index = () => {
         <p className="text-xs text-CA4E1C font-pixelify mt-5">Session ID:<br />{conversationId}</p>
       </div>
 
+      {/* Right Side - Split View */}
       <div className="w-4/5 flex flex-col bg-black">
+        {/* Upper part - Flight Connections */}
         <div className="h-1/2 border-b border-gray-800">
           <ScrollArea className="h-full w-full">
-            <div className="flex h-full p-4 gap-4">
-              {flightData.length > 0 ? (
-                <>
-                  {flightData.map((flight, index) => (
-                    <div
-                      key={`${flight.flights[0].flight_number}-${index}`}
-                      className="w-[300px] h-full flex-none"
-                    >
-                      <FlightConnection {...flight} />
-                    </div>
-                  ))}
-                  <div className="w-[300px] h-full flex-none">
-                    <HotelCard {...DUMMY_HOTEL} />
+            {flightData.length > 0 ? (
+              <div className="flex h-full p-4 gap-4">
+                {flightData.map((flight, index) => (
+                  <div
+                    key={`${flight.flights[0].flight_number}-${index}`}
+                    className="w-[300px] h-full flex-none"
+                  >
+                    <FlightConnection {...flight} />
                   </div>
-                </>
-              ) : (
-                <div className="h-full flex items-center justify-center text-gray-500 text-center italic">
-                  Calculating the force of impact on the runway of your Ryanair flight...<br />
-                  Please stay with us. We are working on it, admittedly slowly - but we are working.
-                </div>
-              )}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="h-full flex items-center justify-center text-gray-500 text-center italic">
+               Calculating the force of impact on the runway of your Ryanair flight...<br />
+               Please stay with us. We are working on it, admittedly slowly - but we are working.
+              </div>
+            )}
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
         </div>
 
+        {/* Lower part - Transcription */}
         <div className="h-1/2 border-t border-gray-800 flex flex-col">
           <div className="flex-1 overflow-hidden">
             <ConversationHistory messages={messages} />
