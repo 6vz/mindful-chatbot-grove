@@ -328,3 +328,5 @@ const Index = () => {
 };
 
 export default Index;
+
+// I didn't added this comment just to redeploy the app on vercel...
