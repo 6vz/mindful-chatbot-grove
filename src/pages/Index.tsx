@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useConversation } from "@11labs/react";
 import { Mic, MicOff } from "lucide-react";
@@ -7,7 +8,7 @@ import ConversationStatus from "@/components/ConversationStatus";
 import VolumeControl from "@/components/VolumeControl";
 import ConversationHistory from "@/components/ConversationHistory";
 import FlightConnection from "@/components/FlightConnection";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
 interface Message {
@@ -117,14 +118,24 @@ const Index = () => {
         role: message.source === "user" ? "user" : "assistant", 
         content: messageContent
       }]);
+
+      // If it's an assistant message and we have speech capabilities, start speaking
+      if (message.source === "assistant" && conversation.status === "connected") {
+        conversation.speak(); // Resume speaking for new messages
+      }
     },
     onSpeechStart: () => {
       console.log("Speech started");
     },
     onUserStartSpeaking: () => {
-      console.log("User started speaking, stopping AI audio");
-      // stop AI model from speaking - .stopSpeaking does not work, and model has to be able to talk again when next message appear
-      conversation.stopSpeaking();
+      console.log("User started speaking, pausing AI audio");
+      if (conversation.isSpeaking) {
+        conversation.pauseSpeaking(); // Pause instead of stop
+      }
+    },
+    onUserStopSpeaking: () => {
+      console.log("User stopped speaking");
+      // Speech will automatically resume when new messages arrive via onMessage
     },
   });
 
