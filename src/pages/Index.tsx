@@ -11,6 +11,10 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import HotelCard from "@/components/HotelCard";
 
+import { useRef } from "react";
+
+
+
 interface Message {
   role: "user" | "assistant" | "api";
   content: string;
@@ -81,6 +85,17 @@ const Index = () => {
   const [flightData, setFlightData] = useState<FlightData[]>([]);
   const [hotelData, setHotelData] = useState<HotelData[]>([]);
   const { toast } = useToast();
+
+  const messagesRef = useRef<Message[]>([]);
+  const conversationIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+
+  useEffect(() => {
+    conversationIdRef.current = conversationId;
+  }, [conversationId]);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
@@ -185,7 +200,18 @@ const Index = () => {
       console.log("User stopped speaking");
     },
     onDisconnect: async () => {
-      // console.log("Session ended, logging json messages");
+      console.log("Session ended, logging json messages");
+
+      await fetch('https://11.azpekt.dev/transcript', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          conversation_id: conversationIdRef.current,
+          transcript: messagesRef.current
+        })
+      });
     }
   });
 
