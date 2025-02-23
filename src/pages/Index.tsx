@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useConversation } from "@11labs/react";
 import { Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,132 +15,82 @@ interface Message {
   content: string;
 }
 
+interface Flight {
+  airline: string;
+  departure_airport: {
+    id: string;
+    name: string;
+    time: string;
+  };
+  arrival_airport: {
+    id: string;
+    name: string;
+    time: string;
+  };
+  duration: number;
+  flight_number: string;
+}
+
+interface FlightData {
+  flights: Flight[];
+  price: number;
+  total_duration: number;
+  type: string;
+}
+
+interface ApiResponse {
+  flights: FlightData[];
+  selected_flight: FlightData;
+}
+
 const Index = () => {
   const [volume, setVolume] = useState(1);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [flightData, setFlightData] = useState<FlightData[]>([]);
   const { toast } = useToast();
 
-  const flightData = [{
-    flights: [
-      {
-        airline: "Finnair",
-        departure_airport: {
-          id: "WAW",
-          name: "Warsaw Frederic Chopin",
-          time: "2025-04-02 13:00"
-        },
-        arrival_airport: {
-          id: "HEL",
-          name: "Helsinki Airport",
-          time: "2025-04-02 15:40"
-        },
-        duration: 100,
-        flight_number: "AY 1144"
-      },
-      {
-        airline: "Finnair",
-        departure_airport: {
-          id: "HEL",
-          name: "Helsinki Airport",
-          time: "2025-04-02 17:15"
-        },
-        arrival_airport: {
-          id: "JFK",
-          name: "John F. Kennedy International Airport",
-          time: "2025-04-02 19:05"
-        },
-        duration: 530,
-        flight_number: "AY 15"
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+
+    const fetchFlights = async () => {
+      if (!conversationId) return;
+
+      try {
+        const response = await fetch(`https://11.azpekt.dev/get-conversation?conversation_id=${conversationId}`);
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch flights');
+        }
+
+        const data: ApiResponse = await response.json();
+        
+        if (data.selected_flight) {
+          setFlightData([data.selected_flight]);
+        } else if (data.flights && data.flights.length > 0) {
+          setFlightData(data.flights);
+        } else {
+          setFlightData([]);
+        }
+      } catch (error) {
+        console.error('Error fetching flights:', error);
       }
-    ],
-    price: 629,
-    total_duration: 725,
-    type: "Round trip"
-  },
-  {
-    flights: [
-      {
-        airline: "Finnair",
-        departure_airport: {
-          id: "WAW",
-          name: "Warsaw Frederic Chopin",
-          time: "2025-04-03 10:00"
-        },
-        arrival_airport: {
-          id: "JFK",
-          name: "John F. Kennedy International Airport",
-          time: "2025-04-03 14:30"
-        },
-        duration: 510,
-        flight_number: "AY 123"
+    };
+
+    if (conversationId) {
+      fetchFlights();
+      intervalId = setInterval(fetchFlights, 7000);
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
       }
-    ],
-    price: 549,
-    total_duration: 510,
-    type: "Direct"
-  },
-  {
-    flights: [
-      {
-        airline: "Fe!n Fe!n Fe!n Airways",
-        departure_airport: {
-          id: "JFK",
-          name: "John F. Kennedy International Airport",
-          time: "2001-09-11 08:46"
-        },
-        arrival_airport: {
-          id: "WTC",
-          name: "World Trade Center",
-          time: "2001-09-11 09:03"
-        },
-        duration: 17,
-        flight_number: "FEIN 11"
-      },
-      {
-        airline: "Fe!n Fe!n Fe!n Airways",
-        departure_airport: {
-          id: "WTC",
-          name: "World Trade Center",
-          time: "2001-09-11 09:03"
-        },
-        arrival_airport: {
-          id: "JFK",
-          name: "John F. Kennedy International Airport",
-          time: "2001-09-11 09:20"
-        },
-        duration: 17,
-        flight_number: "FEIN 11"
-      }
-    ],
-    price: 0,
-    total_duration: 17,
-    type: "Direct"
-    },
-  {
-    flights: [
-      {
-        airline: "Fe!n Fe!n Fe!n Airways",
-        departure_airport: {
-          id: "JFK",
-          name: "John F. Kennedy International Airport",
-          time: "2001-09-11 08:46"
-        },
-        arrival_airport: {
-          id: "WTC",
-          name: "World Trade Center",
-          time: "2001-09-11 09:03"
-        },
-        duration: 17,
-        flight_number: "FEIN 11"
-      }
-    ],
-    price: 0,
-    total_duration: 17,
-    type: "Direct"
-  }
-];
+    };
+  }, [conversationId]);
 
   const conversation = useConversation({
+    apiKey: import.meta.env.VITE_ELEVENLABS_API_KEY,
     onConnect: () => {
       console.log("Connected to conversation");
       toast({
@@ -157,7 +107,6 @@ const Index = () => {
       });
     },
     onMessage: (message) => {
-      console.error(message)
       const messageContent = typeof message === 'object' 
         ? message.message || JSON.stringify(message)
         : String(message);
@@ -172,15 +121,48 @@ const Index = () => {
     onSpeechStart: () => {
       console.log("Speech started");
     },
+    onUserStartSpeaking: () => {
+      console.log("User started speaking, stopping AI response");
+      conversation.stopSpeaking();
+    },
   });
+
+  const getConversationId = async () => {
+    try {
+      const response = await fetch('https://11.azpekt.dev/open-conversation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get conversation ID');
+      }
+
+      const data = await response.json();
+      setConversationId(data.conversation_id);
+      return data.conversation_id;
+    } catch (error) {
+      console.error('Error getting conversation ID:', error);
+      toast({
+        title: "Error",
+        description: "Failed to get conversation ID",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
 
   const handleStartConversation = async () => {
     try {
       console.log("Starting conversation session...");
+      const conversationId = await getConversationId();
+      
       await conversation.startSession({
-        agentId: "jnvvXwb0VcfpApNQH9mK",
+        agentId: import.meta.env.VITE_ELEVENLABS_AGENT_ID,
         dynamicVariables: {
-          user_name: "Aleksander Nawalny",
+          conversation_id: conversationId
         }
       });
     } catch (error) {
@@ -254,6 +236,7 @@ const Index = () => {
         <div className="mt-auto">
           <VolumeControl volume={volume} onVolumeChange={handleVolumeChange} />
         </div>
+        <p> id: {conversationId} </p>
       </div>
 
       {/* Right Side - Split View */}
@@ -261,16 +244,22 @@ const Index = () => {
         {/* Upper part - Flight Connections */}
         <div className="h-1/2 border-b border-gray-800">
           <ScrollArea className="h-full w-full">
-            <div className="flex h-full p-4 gap-4">
-              {flightData.map((flight, index) => (
-                <div
-                  key={index}
-                  className="w-[300px] h-full flex-none"
-                >
-                  <FlightConnection {...flight} />
-                </div>
-              ))}
-            </div>
+            {flightData.length > 0 ? (
+              <div className="flex h-full p-4 gap-4">
+                {flightData.map((flight, index) => (
+                  <div
+                    key={`${flight.flights[0].flight_number}-${index}`}
+                    className="w-[300px] h-full flex-none"
+                  >
+                    <FlightConnection {...flight} />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="h-full flex items-center justify-center text-gray-500 italic">
+                How much longer...
+              </div>
+            )}
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
         </div>
