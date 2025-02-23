@@ -8,7 +8,7 @@ import ConversationStatus from "@/components/ConversationStatus";
 import VolumeControl from "@/components/VolumeControl";
 import ConversationHistory from "@/components/ConversationHistory";
 import FlightConnection from "@/components/FlightConnection";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
 interface Message {
@@ -121,7 +121,7 @@ const Index = () => {
 
       // If it's an assistant message and we have speech capabilities, start speaking
       if (message.source === "assistant" && conversation.status === "connected") {
-        conversation.speak(); // Resume speaking for new messages
+        conversation.startSpeaking(); // Use startSpeaking instead of speak
       }
     },
     onSpeechStart: () => {
@@ -130,12 +130,12 @@ const Index = () => {
     onUserStartSpeaking: () => {
       console.log("User started speaking, pausing AI audio");
       if (conversation.isSpeaking) {
-        conversation.pauseSpeaking(); // Pause instead of stop
+        conversation.stopSpeaking(); // Use stopSpeaking instead of pauseSpeaking
       }
     },
     onUserStopSpeaking: () => {
       console.log("User stopped speaking");
-      // Speech will automatically resume when new messages arrive via onMessage
+      // Speech will automatically resume for new messages via onMessage
     },
   });
 
