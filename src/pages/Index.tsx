@@ -39,6 +39,11 @@ interface FlightData {
   type: string;
 }
 
+interface JsonMessageInformation {
+  role: string;
+  content: string;
+}
+
 interface HotelData {
   name: string;
   hotel_class: string;
@@ -70,6 +75,7 @@ interface ApiResponse {
 
 const Index = () => {
   const [volume, setVolume] = useState(1);
+  const [jsonMessages, setJsonMessages] = useState<JsonMessageInformation[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [flightData, setFlightData] = useState<FlightData[]>([]);
@@ -127,6 +133,8 @@ const Index = () => {
     apiKey: import.meta.env.VITE_ELEVENLABS_API_KEY,
     onConnect: () => {
       console.log("Connected to conversation");
+      setMessages([]);
+      setJsonMessages([]);
       toast({
         title: "Connected",
         description: "Ready to start conversation",
@@ -145,8 +153,14 @@ const Index = () => {
         ? message.message || JSON.stringify(message)
         : String(message);
       
-      console.log(`${message.role} message:`, messageContent);
-      
+      console.log(`${message.source} message:`, messageContent);
+
+      // Append message to JSON log
+      setJsonMessages(prev => [...prev, {
+        role: message.source === "user" ? "user" : "assistant",
+        content: messageContent
+      }]);
+       
       setMessages(prev => [...prev, { 
         role: message.source === "user" ? "user" : "assistant", 
         content: messageContent
@@ -170,6 +184,9 @@ const Index = () => {
     onUserStopSpeaking: () => {
       console.log("User stopped speaking");
     },
+    onDisconnect: async () => {
+      // console.log("Session ended, logging json messages");
+    }
   });
 
   const getConversationId = async () => {
@@ -222,6 +239,21 @@ const Index = () => {
 
   const handleEndConversation = async () => {
     console.log("Ending conversation session...");
+    
+    // Log just the messages array
+    console.log(JSON.stringify(messages, null, 2));
+
+    await fetch('https://11.azpekt.dev/transcript', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        conversation_id: conversationId,
+        transcript: messages
+      })
+    });
+    
     await conversation.endSession();
   };
 
