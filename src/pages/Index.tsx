@@ -9,6 +9,7 @@ import ConversationHistory from "@/components/ConversationHistory";
 import FlightConnection from "@/components/FlightConnection";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import HotelCard from "@/components/HotelCard";
 
 interface Message {
   role: "user" | "assistant" | "api";
@@ -38,9 +39,33 @@ interface FlightData {
   type: string;
 }
 
+interface HotelData {
+  name: string;
+  hotel_class: string;
+  amenities: string[];
+  check_in_time: string;
+  check_out_time: string;
+  price: {
+    per_night: string;
+    per_night_value: number;
+    total: string;
+    total_value: number;
+  };
+  nearby_places: {
+    name: string;
+    transportations: {
+      duration: string;
+      type: string;
+    }[];
+  }[];
+  overall_rating: number;
+}
+
 interface ApiResponse {
   flights: FlightData[];
   selected_flights: FlightData[];
+  hotels: HotelData[];
+  selected_hotel: HotelData[];
 }
 
 const Index = () => {
@@ -48,6 +73,7 @@ const Index = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [flightData, setFlightData] = useState<FlightData[]>([]);
+  const [hotelData, setHotelData] = useState<HotelData[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -71,6 +97,14 @@ const Index = () => {
           setFlightData(data.flights);
         } else {
           setFlightData([]);
+        }
+
+        if (data.selected_hotel && data.selected_hotel.length > data.hotels.length) {
+          setHotelData(data.selected_hotel);
+        } else if (data.hotels && data.hotels.length > 0) {
+          setHotelData(data.hotels);
+        } else {
+          setHotelData([]);
         }
       } catch (error) {
         console.error('Error fetching flights:', error);
@@ -252,7 +286,7 @@ const Index = () => {
       <div className="w-4/5 flex flex-col bg-black">
         <div className="h-1/2 border-b border-gray-800">
           <ScrollArea className="h-full w-full">
-            {flightData.length > 0 ? (
+            {flightData.length > 0 || hotelData.length > 0 ? (
               <div className="flex h-full p-4 gap-4">
                 {flightData.map((flight, index) => (
                   <div
@@ -260,6 +294,14 @@ const Index = () => {
                     className="w-[300px] h-full flex-none"
                   >
                     <FlightConnection {...flight} />
+                  </div>
+                ))}
+                {hotelData.map((hotel, index) => (
+                  <div
+                    key={`${hotel.name}-${index}`}
+                    className="w-[300px] h-full flex-none"
+                  >
+                    <HotelCard {...hotel} />
                   </div>
                 ))}
               </div>
