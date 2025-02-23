@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useConversation } from "@11labs/react";
 import { Mic, MicOff } from "lucide-react";
@@ -8,6 +7,7 @@ import ConversationStatus from "@/components/ConversationStatus";
 import VolumeControl from "@/components/VolumeControl";
 import ConversationHistory from "@/components/ConversationHistory";
 import FlightConnection from "@/components/FlightConnection";
+import HotelCard from "@/components/HotelCard";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 
@@ -43,6 +43,62 @@ interface ApiResponse {
   flights: FlightData[];
   selected_flights: FlightData[];
 }
+
+const DUMMY_HOTEL = {
+  name: "Novotel Krakow Centrum",
+  hotel_class: "4-star hotel",
+  amenities: [
+    "Breakfast ($)",
+    "Free Wi-Fi",
+    "Parking ($)",
+    "Indoor pool",
+    "Hot tub",
+    "Air conditioning",
+    "Pet-friendly",
+    "Fitness centre",
+    "Spa",
+    "Bar",
+    "Restaurant",
+    "Room service",
+    "Airport shuttle",
+    "Full-service laundry",
+    "Accessible",
+    "Business centre",
+    "Child-friendly"
+  ],
+  check_in_time: "4:00 PM",
+  check_out_time: "12:00 PM",
+  rate_per_night: {
+    lowest: "$105",
+    extracted_lowest: 105
+  },
+  nearby_places: [
+    {
+      name: "National Museum in Kraków",
+      transportations: [
+        {
+          duration: "9 min",
+          type: "Walking"
+        }
+      ]
+    },
+    {
+      name: "Krakow John Paul II - Balice",
+      transportations: [
+        {
+          duration: "23 min",
+          type: "Public transport"
+        },
+        {
+          duration: "28 min",
+          type: "Taxi"
+        }
+      ]
+    }
+  ],
+  overall_rating: 4.6,
+  eco_certified: true
+};
 
 const Index = () => {
   const [volume, setVolume] = useState(1);
@@ -119,9 +175,10 @@ const Index = () => {
         content: messageContent
       }]);
 
-      // If it's an assistant message and we have speech capabilities, start speaking
       if (message.source === "assistant" && conversation.status === "connected") {
-        conversation.startSpeaking(); // Use startSpeaking instead of speak
+        if (conversation.speak) {
+          conversation.speak();
+        }
       }
     },
     onSpeechStart: () => {
@@ -129,13 +186,12 @@ const Index = () => {
     },
     onUserStartSpeaking: () => {
       console.log("User started speaking, pausing AI audio");
-      if (conversation.isSpeaking) {
-        conversation.stopSpeaking(); // Use stopSpeaking instead of pauseSpeaking
+      if (conversation.isSpeaking && conversation.speak) {
+        conversation.speak(); // Toggle speech state
       }
     },
     onUserStopSpeaking: () => {
       console.log("User stopped speaking");
-      // Speech will automatically resume for new messages via onMessage
     },
   });
 
@@ -201,7 +257,6 @@ const Index = () => {
 
   return (
     <div className="h-screen flex overflow-hidden">
-      {/* Left Side - Control Panel */}
       <div className="w-1/5 bg-voyagr p-6 flex flex-col">
         <div>
           <h1 className="font-pixelify text-4xl text-white mb-8">Voyagr</h1>
@@ -251,33 +306,35 @@ const Index = () => {
         <p className="text-xs text-CA4E1C font-pixelify mt-5">Session ID:<br />{conversationId}</p>
       </div>
 
-      {/* Right Side - Split View */}
       <div className="w-4/5 flex flex-col bg-black">
-        {/* Upper part - Flight Connections */}
         <div className="h-1/2 border-b border-gray-800">
           <ScrollArea className="h-full w-full">
-            {flightData.length > 0 ? (
-              <div className="flex h-full p-4 gap-4">
-                {flightData.map((flight, index) => (
-                  <div
-                    key={`${flight.flights[0].flight_number}-${index}`}
-                    className="w-[300px] h-full flex-none"
-                  >
-                    <FlightConnection {...flight} />
+            <div className="flex h-full p-4 gap-4">
+              {flightData.length > 0 ? (
+                <>
+                  {flightData.map((flight, index) => (
+                    <div
+                      key={`${flight.flights[0].flight_number}-${index}`}
+                      className="w-[300px] h-full flex-none"
+                    >
+                      <FlightConnection {...flight} />
+                    </div>
+                  ))}
+                  <div className="w-[300px] h-full flex-none">
+                    <HotelCard {...DUMMY_HOTEL} />
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="h-full flex items-center justify-center text-gray-500 text-center italic">
-               Calculating the force of impact on the runway of your Ryanair flight...<br />
-               Please stay with us. We are working on it, admittedly slowly - but we are working.
-              </div>
-            )}
+                </>
+              ) : (
+                <div className="h-full flex items-center justify-center text-gray-500 text-center italic">
+                  Calculating the force of impact on the runway of your Ryanair flight...<br />
+                  Please stay with us. We are working on it, admittedly slowly - but we are working.
+                </div>
+              )}
+            </div>
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
         </div>
 
-        {/* Lower part - Transcription */}
         <div className="h-1/2 border-t border-gray-800 flex flex-col">
           <div className="flex-1 overflow-hidden">
             <ConversationHistory messages={messages} />
